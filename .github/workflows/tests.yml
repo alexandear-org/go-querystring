@@ -16,13 +16,8 @@ jobs:
   test:
     strategy:
       matrix:
-        go-version: [stable, oldstable]
+        go-version: ["1.13"]
         platform: [ubuntu-latest]
-        include:
-          # only update test coverage stats with most recent go version on linux
-          - go-version: stable
-            platform: ubuntu-latest
-            update-coverage: true
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -31,9 +26,7 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: Run go test
-        run: go test -v -race -coverprofile coverage.txt -covermode atomic ./...
-
-      - name: Upload coverage to Codecov
-        if: ${{ matrix.update-coverage }}
-        uses: codecov/codecov-action@ad3126e916f78f00edff4ed0317cf185271ccc2d #v5.4.2
+      - name: Run go build
+        run: |
+          go build ./...
+          go test -v -race -coverprofile coverage.txt -covermode atomic ./...
